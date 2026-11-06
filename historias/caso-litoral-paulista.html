@@ -1,0 +1,370 @@
+<title>Porta Quase Sempre Fechada</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: um caderno de campo. Coluna de leitura estreita, interrompida por "painéis de vigilância" (visor de câmera, grade de horas, faixa de dias) que ocupam a largura toda. */
+:root{
+  --bg:#EDF0F3; --panel:#E1E6EB; --ink:#15202B; --muted:#56636F; --line:#C5CDD5;
+  --accent:#A9620F; --accent-soft:rgba(169,98,15,.14); --rec:#BF3A2C;
+  --fato:#2F6B4F; --indicio:#A9620F; --hipotese:#5B5F9E;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E151E; --panel:#151F2B; --ink:#E4E8EC; --muted:#8B97A4; --line:#263342;
+  --accent:#E8A13A; --accent-soft:rgba(232,161,58,.16); --rec:#E5584B;
+  --fato:#6FBF96; --indicio:#E8A13A; --hipotese:#9EA3E8; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0E151E; --panel:#151F2B; --ink:#E4E8EC; --muted:#8B97A4; --line:#263342;
+  --accent:#E8A13A; --accent-soft:rgba(232,161,58,.16); --rec:#E5584B;
+  --fato:#6FBF96; --indicio:#E8A13A; --hipotese:#9EA3E8; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1.0625rem;line-height:1.65;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 4rem}
+.wrap{max-width:1040px;margin-inline:auto}
+.read{max-width:38rem;margin-inline:auto}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.05;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.9rem,4.5vw,2.6rem);letter-spacing:.005em}
+h3{font-size:1.35rem;letter-spacing:.01em}
+p{margin:0}
+.label{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+section{padding-block:3.25rem 0;display:grid;gap:1.25rem}
+.prose{display:grid;gap:1rem}
+.prose em{color:var(--accent);font-style:italic}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* ---- Visor (hero) ---- */
+.hero{padding-block:2.5rem 0}
+.viewfinder{position:relative;border-radius:4px;background:var(--panel);padding:clamp(1.5rem,5vw,3.5rem);overflow:hidden;isolation:isolate}
+.viewfinder::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:repeating-linear-gradient(0deg,transparent 0 3px,var(--accent-soft) 3px 4px);opacity:.35}
+.corner{position:absolute;width:26px;height:26px;border-color:var(--ink);border-style:solid;opacity:.55}
+.c1{top:14px;left:14px;border-width:2px 0 0 2px}.c2{top:14px;right:14px;border-width:2px 2px 0 0}
+.c3{bottom:14px;left:14px;border-width:0 0 2px 2px}.c4{bottom:14px;right:14px;border-width:0 2px 2px 0}
+.hud{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-bottom:2.25rem}
+.rec{display:inline-flex;align-items:center;gap:.5rem;color:var(--rec);font-weight:600}
+.rec i{width:.6rem;height:.6rem;border-radius:50%;background:var(--rec);animation:blink 1.4s steps(2,start) infinite}
+@keyframes blink{to{visibility:hidden}}
+.hero h1{font-size:clamp(2.6rem,8vw,5.2rem);font-weight:700;letter-spacing:-.005em;max-width:14ch}
+.hero h1 span{color:var(--accent)}
+.lede{max-width:34rem;margin-top:1.25rem;font-size:1.15rem;color:var(--ink)}
+.byline{margin-top:1.75rem;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+
+/* ---- Números ---- */
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border-block:1px solid var(--line);margin-top:2.5rem}
+.stat{background:var(--bg);padding:1.1rem .25rem 1.1rem 0;display:grid;gap:.15rem}
+.stat b{font-family:var(--display);font-size:clamp(2.2rem,6vw,3.2rem);font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.stat span{font-size:.9rem;color:var(--muted);line-height:1.35}
+.stat + .stat{padding-left:1rem}
+
+/* ---- Faixa de dias ---- */
+.panel{background:var(--panel);border-radius:4px;padding:clamp(1rem,3vw,1.75rem);display:grid;gap:1rem;min-width:0}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap}
+.scroll{overflow-x:auto}
+.days{display:grid;grid-template-columns:repeat(10,minmax(54px,1fr));gap:6px;min-width:600px}
+.day{display:grid;grid-template-rows:auto 120px auto;gap:.4rem;text-align:center}
+.day .d{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.bar{position:relative;border:1px dashed var(--line);border-radius:3px;display:flex;align-items:flex-end;overflow:hidden}
+.bar .fill{width:100%;height:var(--h);background:var(--accent);border-radius:2px 2px 0 0;transform-origin:bottom}
+.bar.unk{background:repeating-linear-gradient(135deg,transparent 0 6px,var(--accent-soft) 6px 12px)}
+.bar.unk::after{content:"?";position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-size:1.6rem;color:var(--muted)}
+.day .v{font-family:var(--mono);font-size:.72rem;font-variant-numeric:tabular-nums}
+.phases{display:grid;grid-template-columns:7fr 3fr;gap:6px;min-width:600px}
+.phase{border-top:2px solid var(--ink);padding-top:.4rem;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.phase.ext{border-top-style:dashed}
+.note{font-size:.85rem;color:var(--muted);line-height:1.5}
+
+/* ---- Grade de 56 horas ---- */
+.grid56{display:grid;grid-template-columns:auto repeat(8,minmax(0,1fr));gap:5px;align-items:center}
+.grid56 .rl{font-family:var(--mono);font-size:.72rem;color:var(--muted);padding-right:.35rem}
+.cell{aspect-ratio:1;max-width:100%;border:1px solid var(--line);border-radius:2px;background:transparent}
+.grid56.run .cell{animation:fillc .35s ease forwards;animation-delay:calc(var(--i) * 45ms)}
+@keyframes fillc{to{background:var(--line);border-color:var(--line)}}
+.cell.hit{position:relative}
+.grid56.run .cell.hit{animation-name:fillhit}
+@keyframes fillhit{to{background:var(--accent);border-color:var(--accent)}}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;font-size:.85rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:.45rem}
+.legend i{width:.8rem;height:.8rem;border-radius:2px;display:inline-block}
+.counter{font-family:var(--display);font-size:2.4rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.counter small{font-family:var(--mono);font-size:.75rem;font-weight:400;color:var(--muted);letter-spacing:.08em;margin-left:.4rem}
+
+/* ---- Mostra / não mostra ---- */
+.split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.split > div{padding:1.1rem 1.2rem;border:1px solid var(--line);border-radius:4px;display:grid;gap:.6rem;align-content:start}
+.split ul{margin:0;padding-left:1.1rem;display:grid;gap:.4rem;font-size:.98rem}
+.split .yes h3{color:var(--fato)}.split .no h3{color:var(--muted)}
+
+/* ---- Movimentos buscados ---- */
+.moves{display:flex;flex-wrap:wrap;gap:.5rem;padding:0;margin:0;list-style:none}
+.moves li{font-family:var(--mono);font-size:.82rem;padding:.4rem .7rem;border:1px solid var(--line);border-radius:999px;background:var(--panel)}
+
+/* ---- Classificação ---- */
+.classes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.cls{border-top:4px solid var(--c);padding-top:.85rem;display:grid;gap:.6rem;align-content:start;min-width:0}
+.cls h3{color:var(--c);font-size:1.6rem}
+.cls .def{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.cls ul{margin:0;padding-left:1.05rem;display:grid;gap:.5rem;font-size:.95rem;line-height:1.5}
+
+/* ---- Citação ---- */
+blockquote{margin:0;padding:1.5rem 0 1.5rem 1.25rem;border-left:3px solid var(--accent);
+  font-family:var(--display);font-weight:600;font-size:clamp(1.6rem,4.2vw,2.3rem);line-height:1.15;text-wrap:balance}
+
+footer{margin-top:3.5rem;padding-top:1.25rem;border-top:1px solid var(--line);display:grid;gap:.5rem;font-size:.85rem;color:var(--muted)}
+footer strong{font-family:var(--display);font-size:1.15rem;color:var(--ink);letter-spacing:.02em}
+
+/* Entrada suave: o conteúdo já está visível; a animação só desloca. */
+.js .rise{transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.js .rise.wait{transform:translateY(14px)}
+
+@media (max-width:640px){
+  .stats{grid-template-columns:1fr}
+  .stat + .stat{padding-left:0}
+  .split,.classes{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  .rec i{animation:none}
+  .js .rise,.js .rise.wait{transition:none;transform:none}
+  .grid56 .cell{background:var(--line);border-color:var(--line)}
+  .grid56 .cell.hit{background:var(--accent);border-color:var(--accent)}
+  .grid56.run .cell{animation:none}
+}
+</style>
+
+<main class="wrap">
+
+  <header class="hero">
+    <div class="viewfinder" aria-label="Abertura do relato">
+      <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
+      <div class="hud" aria-hidden="true">
+        <span class="rec"><i></i>REC <span id="tc">00:00:00</span></span>
+        <span>LITORAL PAULISTA · 2026</span>
+      </div>
+      <p class="label">Caso real · Investigação particular</p>
+      <h1>Dez dias diante de uma porta <span>quase sempre fechada</span></h1>
+      <p class="lede">Uma investigação sobre rotina e esforço físico, ligada a um processo judicial. O que ela ensina sobre paciência, método e o limite entre o que se vê e o que se supõe.</p>
+      <p class="byline">Por Cícero Ramos · detetive particular · CR Investigações</p>
+    </div>
+
+    <div class="stats rise">
+      <div class="stat"><b>10</b><span>dias de campo, em duas etapas</span></div>
+      <div class="stat"><b>56 h</b><span>de observação só na primeira etapa</span></div>
+      <div class="stat"><b>0</b><span>conclusões antecipadas no relatório</span></div>
+    </div>
+  </header>
+
+  <section class="read rise">
+    <p class="label">A missão</p>
+    <h2>Verificar, não confirmar</h2>
+    <div class="prose">
+      <p>Em 2026 fui contratado para levantar a rotina de uma pessoa envolvida em um processo judicial. A pergunta era objetiva: ela realiza, no dia a dia, esforços físicos compatíveis com o que alega?</p>
+      <p>O trabalho não era seguir alguém. Era reunir elementos concretos, com data, hora e imagem, que ajudassem a esclarecer os fatos. Para qualquer lado.</p>
+    </div>
+  </section>
+
+  <section class="rise">
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Os dez dias de campo</h3>
+        <span class="label">Horas por dia</span>
+      </div>
+      <div class="scroll">
+        <div class="days" id="days"></div>
+        <div class="phases" style="margin-top:.6rem">
+          <div class="phase">Etapa 1 · 7 dias · 56 h no total</div>
+          <div class="phase ext">Etapa 2 · prorrogação · 3 dias</div>
+        </div>
+      </div>
+      <p class="note">Na etapa 1 aparece a média diária (56 h ÷ 7 dias = 8 h). O relato não detalha a carga de cada dia nem as horas da prorrogação, por isso essas barras ficam em aberto.</p>
+    </div>
+  </section>
+
+  <section class="read rise">
+    <p class="label">A dificuldade</p>
+    <h2>Quando nada acontece</h2>
+    <div class="prose">
+      <p>A pessoa raramente saía do imóvel. A rua exigia cuidado com o posicionamento do veículo e da equipe, porque uma vigilância percebida é uma vigilância perdida.</p>
+      <p>É a parte do trabalho que ninguém vê: horas olhando para o mesmo portão. Cada hora conta, mesmo sem registro, porque mostra a rotina real.</p>
+    </div>
+  </section>
+
+  <section class="rise">
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Como são 56 horas de vigilância</h3>
+        <div class="counter" aria-live="off"><span id="hcount">56</span><small>HORAS</small></div>
+      </div>
+      <div class="grid56" id="grid56" role="img" aria-label="Grade com 56 quadrados, um por hora de observação na primeira etapa, organizados em 7 dias de 8 horas. Um quadrado em destaque representa a observação relevante."></div>
+      <div class="legend">
+        <span><i style="background:var(--line)"></i>1 hora de observação</span>
+        <span><i style="background:var(--accent)"></i>Observação relevante</span>
+      </div>
+      <p class="note">Gráfico ilustrativo. Cada quadrado é uma hora. A posição do destaque não corresponde ao horário real, que fica restrito ao relatório entregue ao contratante.</p>
+    </div>
+  </section>
+
+  <section class="read rise">
+    <p class="label">O primeiro registro</p>
+    <h2>Um objeto volumoso, carregado sem ajuda</h2>
+    <div class="prose">
+      <p>Em uma das jornadas, a pessoa saiu carregando sozinha um objeto grande até um veículo. Registrei a cena, embora outro carro tenha bloqueado parte da visão.</p>
+      <p>No momento, não percebi dificuldade aparente de locomoção ou de manuseio. É um elemento relevante. Mas <em>um episódio isolado não define a condição física de ninguém</em>, e o relatório precisa dizer isso.</p>
+    </div>
+  </section>
+
+  <section class="read rise">
+    <div class="split">
+      <div class="yes">
+        <h3>O que a imagem mostra</h3>
+        <ul>
+          <li>A pessoa carregando o objeto sem ajuda</li>
+          <li>Nenhum sinal visível de dificuldade naquele momento</li>
+          <li>Data, hora e local do registro</li>
+        </ul>
+      </div>
+      <div class="no">
+        <h3>O que ela não mostra</h3>
+        <ul>
+          <li>O peso real do objeto</li>
+          <li>Se houve dor ou esforço não aparente</li>
+          <li>Diagnóstico ou capacidade para o trabalho</li>
+          <li>O trecho encoberto pelo outro veículo</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="read rise">
+    <p class="label">A prorrogação</p>
+    <h2>Mais três dias para ampliar a amostra</h2>
+    <div class="prose">
+      <p>Com poucas saídas registradas, propus ao contratante mais três dias de campo. O objetivo era observar movimentos específicos, que só têm valor se aparecem mais de uma vez:</p>
+    </div>
+    <ul class="moves">
+      <li>Permanecer em pé</li>
+      <li>Agachar e flexionar</li>
+      <li>Esforço repetitivo</li>
+      <li>Atividade profissional</li>
+    </ul>
+    <div class="prose">
+      <p>Mesmo com novas imagens de esforço físico, a regra continuou a mesma: descrever o que aparece, sem converter imagem em laudo. Avaliar capacidade física cabe ao perito médico, não ao detetive.</p>
+    </div>
+  </section>
+
+  <section class="rise">
+    <div class="read" style="width:100%">
+      <p class="label">Como o relatório separa as coisas</p>
+      <h2 style="margin-top:.5rem">Fato, indício e hipótese</h2>
+    </div>
+    <div class="classes">
+      <div class="cls" style="--c:var(--fato)">
+        <h3>Fato</h3>
+        <p class="def">Registrado e verificável</p>
+        <ul>
+          <li>Dez dias de diligência em duas etapas</li>
+          <li>56 horas de observação na primeira etapa</li>
+          <li>A pessoa carregou sozinha um objeto volumoso, e há gravação</li>
+        </ul>
+      </div>
+      <div class="cls" style="--c:var(--indicio)">
+        <h3>Indício</h3>
+        <p class="def">Sugere, mas não prova</p>
+        <ul>
+          <li>Ausência de dificuldade aparente durante o esforço</li>
+          <li>Novos registros de esforço físico na prorrogação</li>
+        </ul>
+      </div>
+      <div class="cls" style="--c:var(--hipotese)">
+        <h3>Hipótese</h3>
+        <p class="def">A verificar por outros meios</p>
+        <ul>
+          <li>Compatibilidade entre a rotina observada e o que foi alegado no processo</li>
+          <li>Cabe ao juízo, com apoio da perícia, decidir</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="read rise">
+    <p class="label">O resultado</p>
+    <h2>Elementos entregues, decisão em aberto</h2>
+    <div class="prose">
+      <p>A investigação produziu registros objetivos da rotina e de atividades físicas da pessoa observada. Até a publicação deste relato, não há decisão judicial definitiva. E está tudo bem: o papel do detetive termina no relatório.</p>
+      <p>Na investigação particular, o registro se limita ao que é visível de local público, dentro do que permitem a Lei 13.432/2017, a LGPD e o respeito à intimidade. Uma prova obtida fora desses limites não serve ao cliente e pode prejudicá-lo.</p>
+    </div>
+    <blockquote>Investigar não é provar uma suspeita. É descobrir, registrar e apresentar só o que pode ser demonstrado.</blockquote>
+  </section>
+
+  <footer class="read">
+    <strong>CR Investigações</strong>
+    <span>Cícero Ramos · detetive particular · São Paulo (SP)</span>
+    <span>Relato de caso real. Nomes, local exato, datas e detalhes que pudessem identificar os envolvidos foram omitidos ou generalizados para preservar o sigilo profissional e a privacidade.</span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  document.documentElement.classList.add('js');
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Faixa de dias
+  var days = document.getElementById('days'), html = '';
+  for (var d = 1; d <= 10; d++) {
+    var known = d <= 7;
+    html += '<div class="day"><span class="d">D' + d + '</span>' +
+      '<div class="bar' + (known ? '' : ' unk') + '">' + (known ? '<div class="fill" style="--h:' + (8/12*100) + '%"></div>' : '') + '</div>' +
+      '<span class="v">' + (known ? '8 h*' : 'n/i') + '</span></div>';
+  }
+  days.innerHTML = html;
+  days.insertAdjacentHTML('afterend', '');
+
+  // Grade de 56 horas
+  var g = document.getElementById('grid56'), gh = '', HIT = 3 * 8 + 5; // posição ilustrativa
+  for (var r = 0; r < 7; r++) {
+    gh += '<span class="rl">D' + (r + 1) + '</span>';
+    for (var c = 0; c < 8; c++) {
+      var i = r * 8 + c;
+      gh += '<span class="cell' + (i === HIT ? ' hit' : '') + '" style="--i:' + i + '"></span>';
+    }
+  }
+  g.innerHTML = gh;
+
+  // Contador do visor
+  var tc = document.getElementById('tc'), t0 = Date.now();
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  if (!reduce) setInterval(function(){
+    var s = Math.floor((Date.now() - t0) / 1000);
+    tc.textContent = pad(Math.floor(s/3600)) + ':' + pad(Math.floor(s/60)%60) + ':' + pad(s%60);
+  }, 1000);
+
+  var hc = document.getElementById('hcount');
+  function runGrid(){
+    if (g.classList.contains('run')) return;
+    g.classList.add('run');
+    if (reduce) return;
+    var n = 0, timer = setInterval(function(){ n++; hc.textContent = n; if (n >= 56) clearInterval(timer); }, 45);
+  }
+
+  if (!('IntersectionObserver' in window) || reduce) { runGrid(); return; }
+
+  var rises = document.querySelectorAll('.rise');
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.remove('wait'); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -8% 0px' });
+  rises.forEach(function(el){
+    var rect = el.getBoundingClientRect();
+    if (rect.top > window.innerHeight) { el.classList.add('wait'); io.observe(el); }
+  });
+
+  var gio = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) { hc.textContent = '0'; runGrid(); gio.disconnect(); } });
+  }, { threshold: .35 });
+  gio.observe(g);
+})();
+</script>
